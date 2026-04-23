@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Ujian Online</title>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- SheetJS Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  
+  <!-- External CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== LOGIN PAGE ===== -->
+  <section id="page-login" class="page active">
+    <div class="login-container">
+      <div class="login-brand">
+        <div class="brand-icon">🎓</div>
+        <h1 class="brand-title">Sistem Ujian Online</h1>
+        <p class="brand-sub">Platform ujian digital yang aman dan terpercaya</p>
+      </div>
+
+      <div class="login-card">
+        <div class="role-tabs">
+          <button class="role-tab active" data-role="admin">Admin</button>
+          <button class="role-tab" data-role="guru">Guru</button>
+          <button class="role-tab" data-role="siswa">Siswa</button>
+        </div>
+
+        <form id="login-form">
+          <div class="form-group">
+            <label for="username">Username / NIS</label>
+            <input type="text" id="username" name="username" placeholder="Masukkan username" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Masukkan password" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full mt-3">
+            🔐 Masuk Sistem
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+  <!-- ===== APP PAGE ===== -->
+  <section id="page-app" class="page">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">🎓 Ujian Online</div>
+        <div class="sidebar-role" id="sidebar-role-display">Admin</div>
+        <div class="sidebar-user mt-2">
+          <div class="avatar avatar-admin" id="user-avatar">A</div>
+          <div>
+            <div class="bold" id="user-name-display">Administrator</div>
+            <div class="text-xs text-muted" id="user-id-display">ID: 001</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">Main Menu</div>
+        <div class="nav-item active" data-page="dashboard">
+          <span class="nav-icon">📊</span> Dashboard
+        </div>
+        <div class="nav-item" data-page="data-master">
+          <span class="nav-icon">🗄️</span> Data Master
+        </div>
+        <div class="nav-item" data-page="ujian">
+          <span class="nav-icon">📝</span> Manajemen Ujian
+        </div>
+        <div class="nav-item" data-page="peserta">
+          <span class="nav-icon">👥</span> Data Peserta
+        </div>
+        <div class="nav-item" data-page="laporan">
+          <span class="nav-icon">📈</span> Laporan
+        </div>
+        <div class="nav-item" data-page="pengaturan">
+          <span class="nav-icon">⚙️</span> Pengaturan
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-ghost btn-full btn-sm" id="btn-logout">
+          🚪 Keluar
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="page-header">
+        <h1 class="page-title">Dashboard</h1>        <p class="page-subtitle">Ringkasan aktivitas sistem ujian online</p>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="grid-4 mb-4">
+        <div class="stat-card blue">
+          <div class="stat-icon">👥</div>
+          <div class="stat-value" id="stat-total-siswa">0</div>
+          <div class="stat-label">Total Siswa</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon">📝</div>
+          <div class="stat-value" id="stat-total-ujian">0</div>
+          <div class="stat-label">Ujian Aktif</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-icon">✅</div>
+          <div class="stat-value" id="stat-selesai">0</div>
+          <div class="stat-label">Selesai Ujian</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-value" id="stat-belum">0</div>
+          <div class="stat-label">Belum Mulai</div>
+        </div>
+      </div>
+
+      <!-- Content Sections -->
+      <div id="content-dashboard" class="tab-content active">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Ujian Terbaru</h3>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Mata Pelajaran</th>
+                    <th>Kelas</th>
+                    <th>Tanggal</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="table-ujian-terbaru">
+                  <!-- Dynamic content -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Aktivitas Terkini</h3>
+            </div>
+            <div id="activity-log">
+              <!-- Dynamic content -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Other content sections would go here -->
+      <div id="content-data-master" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Data Master</h3>
+            <button class="btn btn-primary btn-sm" id="btn-tambah-data">+ Tambah</button>
+          </div>
+          <div class="tabs">
+            <button class="tab-btn active" data-tab="siswa">Siswa</button>
+            <button class="tab-btn" data-tab="guru">Guru</button>
+            <button class="tab-btn" data-tab="mapel">Mata Pelajaran</button>
+            <button class="tab-btn" data-tab="kelas">Kelas</button>
+          </div>
+          <div class="tab-content active" id="tab-siswa">
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>NIS</th>
+                    <th>Nama</th>
+                    <th>Kelas</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="table-siswa">
+                  <!-- Dynamic content -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- More sections... -->
+    </main>
+  </section>
+
+  <!-- ===== EXAM PAGE ===== -->  <section id="page-exam" class="page">
+    <header class="exam-header">
+      <div>
+        <div class="exam-title" id="exam-title-display">Ujian Matematika</div>
+        <div class="exam-info" id="exam-info-display">Kelas X • 30 Soal • 60 Menit</div>
+      </div>
+      <div class="exam-timer" id="exam-timer">60:00</div>
+    </header>
+
+    <div class="exam-body">
+      <nav class="exam-nav">
+        <div class="exam-nav-title">Navigasi Soal</div>
+        <div class="question-nums" id="question-nums">
+          <!-- Dynamic question numbers -->
+        </div>
+      </nav>
+
+      <main class="exam-main">
+        <div class="question-card">
+          <div class="question-header">
+            <span class="question-num-badge">Soal <span id="current-q-num">1</span></span>
+            <button class="btn btn-ghost btn-sm" id="btn-flag-question">
+              🚩 Tandai
+            </button>
+          </div>
+          <div class="question-text" id="question-text">
+            <!-- Question content -->
+          </div>
+          <ul class="options-list" id="options-list">
+            <!-- Options -->
+          </ul>
+        </div>
+
+        <div class="flex justify-between mt-4" style="max-width:720px;margin:20px auto 0;">
+          <button class="btn btn-ghost" id="btn-prev-question">← Sebelumnya</button>
+          <button class="btn btn-primary" id="btn-next-question">Selanjutnya →</button>
+        </div>
+      </main>
+    </div>
+  </section>
+
+  <!-- ===== MODAL ===== -->
+  <div id="modal-container"></div>
+
+  <!-- ===== TOAST ===== -->
+  <div id="toast-container"></div>
+
+  <!-- External JS -->
+  <script src="script.js"></script>
+</body></html>
